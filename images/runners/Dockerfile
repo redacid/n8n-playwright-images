@@ -4,7 +4,7 @@ ARG PYTHON_VERSION=3.13
 # ==============================================================================
 # STAGE 1: JavaScript runner (@n8n/task-runner) artifact from CI
 # ==============================================================================
-FROM node:${NODE_VERSION}-bookworm AS javascript-runner-builder
+FROM node:${NODE_VERSION}-bookworm-slim AS javascript-runner-builder
 COPY ./dist/task-runner-javascript /app/task-runner-javascript
 
 WORKDIR /app/task-runner-javascript
@@ -34,10 +34,10 @@ RUN rm -f node_modules/.modules.yaml && \
 # STAGE 2: Python runner build (@n8n/task-runner-python) with uv
 # Produces a relocatable venv tied to the python version used
 # ==============================================================================
-FROM python:${PYTHON_VERSION}-bookworm AS python-runner-builder
+FROM python:${PYTHON_VERSION}-slim-bookworm AS python-runner-builder
 ARG TARGETPLATFORM
 ARG UV_VERSION=0.8.14
-
+RUN apt update && apt install -y wget
 RUN set -e; \
   case "$TARGETPLATFORM" in \
     "linux/amd64") UV_ARCH="x86_64-unknown-linux-musl" ;; \
@@ -99,12 +99,12 @@ RUN set -e; \
 # ==============================================================================
 # STAGE 4: Node bookworm base for JS task runner
 # ==============================================================================
-FROM node:${NODE_VERSION}-bookworm AS node-bookworm
+FROM node:${NODE_VERSION}-bookworm-slim AS node-bookworm
 
 # ==============================================================================
 # STAGE 5: Runtime
 # ==============================================================================
-FROM python:${PYTHON_VERSION}-bookworm AS runtime
+FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
 ARG N8N_VERSION=snapshot
 ARG N8N_RELEASE_TYPE=dev
 
@@ -141,6 +141,8 @@ SHELL ["/bin/bash","-c"]
 RUN source /opt/runners/task-runner-python/.venv/bin/activate && pip install playwright  && playwright install-deps
 #RUN source /opt/runners/task-runner-python/.venv/bin/activate
 RUN cd /opt/runners/task-runner-python && uv pip install playwright
+
+RUN apt clean && apt autoremove
 
 USER runner
 ENV PATH=${PATH}:/home/runner/.local/bin
