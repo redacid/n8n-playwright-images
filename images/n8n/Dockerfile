@@ -38,6 +38,8 @@ RUN cd /usr/local/lib/node_modules/n8n/node_modules/pdfjs-dist && npm install @n
 
 RUN npx playwright install-deps
 
+RUN apt clean && apt autoremove
+
 USER node
 RUN npx playwright install
 RUN ls -la /home/node/.cache/ms-playwright/chromium-1200/
