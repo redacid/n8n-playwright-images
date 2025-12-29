@@ -13,19 +13,21 @@ N8N_PROJECT_DIR := $(TMP_DIR)/n8n
 N8N_NODE_VERSION := 22.21.1
 CRANE_VERSION := 0.20.7
 CRANE_BIN := $(TMP_DIR)/crane/crane
+PNPM_VERSION := 10.26.2
+PNPM_BIN := $(TMP_DIR)/pnpm/pnpm
 N8N_VERSION := 2.1.4
 N8N_IMAGES_REPO := redacid
-#FLATTEN := "-flatten"
+#POSTFIX := -slim
 LOCAL_IMAGES_REPO := localhost:5000
 N8N_IMAGES_BASE_NAME := n8n-playwright
 
-N8N_BASE_IMAGE := $(LOCAL_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME)-base:$(N8N_NODE_VERSION)
-N8N_IMAGE := $(LOCAL_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME):$(N8N_VERSION)
-N8N_RUNNERS_IMAGE := $(LOCAL_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME)-runners:$(N8N_VERSION)
+N8N_BASE_IMAGE := $(LOCAL_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME):$(N8N_NODE_VERSION)-base$(POSTFIX)
+N8N_IMAGE := $(LOCAL_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME):$(N8N_VERSION)-n8n$(POSTFIX)
+N8N_RUNNERS_IMAGE := $(LOCAL_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME):$(N8N_VERSION)-runners$(POSTFIX)
 
-EXT_BASE_IMAGE := $(N8N_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME)-base$(FLATTEN):$(N8N_NODE_VERSION)
-EXT_IMAGE := $(N8N_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME)$(FLATTEN):$(N8N_VERSION)
-EXT_RUNNERS_IMAGE := $(N8N_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME)-runners$(FLATTEN):$(N8N_VERSION)
+EXT_BASE_IMAGE := $(N8N_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME):$(N8N_NODE_VERSION)-base$(POSTFIX)
+EXT_IMAGE := $(N8N_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME)$(POSTFIX):$(N8N_VERSION)-n8n$(POSTFIX)
+EXT_RUNNERS_IMAGE := $(N8N_IMAGES_REPO)/$(N8N_IMAGES_BASE_NAME):$(N8N_VERSION)-runners$(POSTFIX)
 
 # colors
 GREEN = $(shell tput -Txterm setaf 2)
@@ -94,6 +96,14 @@ get-crane:
 	rm $(TMP_DIR)/crane.tar.gz
 
 .ONESHELL:
+.PHONY: get-pnpm
+## Download pnpm
+get-pnpm:
+	mkdir -p $(TMP_DIR)/pnpm
+	wget https://github.com/pnpm/pnpm/releases/download/v$(PNPM_VERSION)/pnpm-linux-x64 -O $(TMP_DIR)/pnpm/pnpm
+	chmod +x $(TMP_DIR)/pnpm/pnpm
+
+.ONESHELL:
 .PHONY: clone-n8n-repo
 ## Clone n8n repo | Clone
 clone-n8n-repo: cleanup
@@ -113,12 +123,12 @@ build-all: build-n8n build-base-image build-n8n-image build-runners-image crane-
 .ONESHELL:
 .PHONY: build-n8n
 ## Build n8n
-build-n8n: clone-n8n-repo get-node
+build-n8n: clone-n8n-repo get-node get-pnpm
 	cd $(N8N_PROJECT_DIR)
 	export PATH=$(NODE):$(PATH)
-	pnpm install
-	pnpm run build
-	pnpm run build:n8n
+	$(PNPM_BIN) install
+	$(PNPM_BIN) run build
+	$(PNPM_BIN) run build:n8n
 
 .ONESHELL:
 .PHONY: build-base-image
