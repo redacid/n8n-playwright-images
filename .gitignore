@@ -1,0 +1,28 @@
+### Terraform
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.terraform.lock*
+
+### Ansible inventory
+ansible_inventory
+
+### Kubeconfigs
+kubeconfig*
+*.iml
+.idea
+**/.env
+*.tar.gz
+*.tgz
+/.venv/
+/out/
+
+/gd-compare/09122025/*
+/gd-compare/10122025/*
+
+*.csv
+
+/TMP/

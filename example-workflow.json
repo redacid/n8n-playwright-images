@@ -1,0 +1,153 @@
+{
+  "name": "PW-TEST",
+  "nodes": [
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "import re\nfrom playwright.sync_api import Page, expect, sync_playwright\n\n\ndef test_has_title(page: Page):\n    page.goto(\"https://playwright.dev/\")\n    expect(page).to_have_title(re.compile(\"Playwright\"))\n\n\ndef test_get_started_link(page: Page):\n    page.goto(\"https://playwright.dev/\")\n    page.get_by_role(\"link\", name=\"Get started\").click()\n    expect(page.get_by_role(\"heading\", name=\"Installation\")).to_be_visible()\n\n\nresults = []\n\nwith sync_playwright() as p:\n    # ВАЖЛИВО: headless=True для роботи в Docker/n8n\n    # args=['--no-sandbox'] часто необхідний для запусків під root або в контейнерах\n    browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])\n\n    try:\n        page = browser.new_page()\n\n        test_has_title(page)\n        test_get_started_link(page)\n\n        results.append({\n            \"status\": \"success\",\n            \"message\": \"Tests passed successfully\"\n        })\n    except Exception as e:\n        results.append({\n            \"status\": \"error\",\n            \"message\": str(e)\n        })\n    finally:\n        browser.close()\n\nreturn results"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        -320
+      ],
+      "id": "95c94e0a-a201-4dd7-a148-1c7d036c8e98",
+      "name": "Code in Python (Native)1"
+    },
+    {
+      "parameters": {
+        "path": "124ed051-0bcf-46e4-aad7-0fda42692472",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        -320
+      ],
+      "id": "5c94fedc-ac28-4c44-a63a-e4b8819e3b7a",
+      "name": "Webhook",
+      "webhookId": "124ed051-0bcf-46e4-aad7-0fda42692472"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -528,
+        -320
+      ],
+      "id": "570cb4dd-df3b-4623-ae9e-aeda4bf31880",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "https://google.com",
+        "browserOptions": {
+          "headless": true
+        }
+      },
+      "type": "n8n-nodes-playwright-mcp.playwright",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        -512
+      ],
+      "id": "fc4a00cd-40c5-4c9e-9156-d5ebfc773eaa",
+      "name": "Playwright"
+    },
+    {
+      "parameters": {
+        "path": "0ff27a23-dc24-44a6-b39d-ef98586e1b1d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        -512
+      ],
+      "id": "796aae97-4795-4146-8ed6-d021a20e2846",
+      "name": "Webhook1",
+      "webhookId": "0ff27a23-dc24-44a6-b39d-ef98586e1b1d"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -528,
+        -512
+      ],
+      "id": "ec1db5cb-19da-433b-9c17-4f2f3212fbb1",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in Python (Native)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python (Native)1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Playwright",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Playwright": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "cb165a51-7913-4c08-b343-befdef454a07",
+  "meta": {
+    "instanceId": "65e4448af98accb34c7e70d739046d26f2e68b385f5253b3a8420b326ce3f91e"
+  },
+  "id": "QMMW2WeTGEkT8nME",
+  "tags": []
+}
