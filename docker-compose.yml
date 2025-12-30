@@ -9,7 +9,7 @@ services:
       - GENERIC_TIMEZONE="Europe/Kyiv"
       - TZ="Europe/Kyiv"
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - WEBHOOK_URL=http://localhost:5680/
+      - WEBHOOK_URL=${WEBHOOK_URL}
       - N8N_PROXY_HOPS=1
       - N8N_RUNNERS_ENABLED=true
       - N8N_RUNNERS_MODE=external
