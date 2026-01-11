@@ -15,7 +15,7 @@ CRANE_VERSION := 0.20.7
 CRANE_BIN := $(TMP_DIR)/crane/crane
 PNPM_VERSION := 10.26.2
 PNPM_BIN := $(TMP_DIR)/pnpm/pnpm
-N8N_VERSION := 2.1.4
+N8N_VERSION := 2.2.6
 N8N_IMAGES_REPO := redacid
 POSTFIX := -slim
 LOCAL_IMAGES_REPO := localhost:5000
@@ -174,10 +174,13 @@ registry-push:
 	docker push $(N8N_IMAGE)
 	docker push $(N8N_RUNNERS_IMAGE)
 
+registry-wait:
+	sleep 60
+
 .ONESHELL:
 .PHONY: crane-flatten
 ## Build runners image | Push
-crane-flatten: get-crane registry-start registry-push
+crane-flatten: get-crane registry-start registry-wait registry-push
 	@echo $(DOCKER_PASS) | docker login --username $(DOCKER_USER) --password-stdin
 	$(CRANE_BIN) flatten $(N8N_BASE_IMAGE) -t $(EXT_BASE_IMAGE)
 	$(CRANE_BIN) flatten $(N8N_IMAGE) -t $(EXT_IMAGE)
