@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: redacid/n8n-playwright:2.1.4-n8n-slim
+    image: redacid/n8n-playwright:2.2.6-n8n-slim
     container_name: n8n-main
     ports:
       - "5680:5678"
@@ -40,7 +40,7 @@ services:
       - n8nnet-pw
 
   task-runners:
-    image: redacid/n8n-playwright:2.1.4-runners-slim
+    image: redacid/n8n-playwright:2.2.6-runners-slim
     container_name: n8n-runners
     restart: unless-stopped
     environment:
