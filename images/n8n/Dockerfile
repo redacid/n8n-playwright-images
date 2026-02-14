@@ -42,7 +42,7 @@ RUN apt clean && apt autoremove
 
 USER node
 RUN npx playwright install
-RUN ls -la /home/node/.cache/ms-playwright/chromium-1200/
+#RUN ls -la /home/node/.cache/ms-playwright/chromium-1208/
 RUN for dir in /home/node/.cache/ms-playwright/chromium-*/; do \
         if [ -d "${dir}chrome-linux64" ] && [ ! -e "${dir}chrome-linux" ]; then \
             ln -s chrome-linux64 "${dir}chrome-linux"; \

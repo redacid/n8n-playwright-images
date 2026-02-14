@@ -15,7 +15,7 @@ CRANE_VERSION := 0.20.7
 CRANE_BIN := $(TMP_DIR)/crane/crane
 PNPM_VERSION := 10.26.2
 PNPM_BIN := $(TMP_DIR)/pnpm/pnpm
-N8N_VERSION := 2.1.4
+N8N_VERSION := 2.7.4
 N8N_IMAGES_REPO := redacid
 POSTFIX := -slim
 LOCAL_IMAGES_REPO := localhost:5000
@@ -159,6 +159,7 @@ build-runners-image:
 ## Start local registry
 registry-start:
 	docker run -d -p 5000:5000 --rm --name local-registry registry:2
+	sleep 10
 
 .ONESHELL:
 .PHONY: registry-stop
