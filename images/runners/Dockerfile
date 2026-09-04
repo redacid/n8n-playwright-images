@@ -28,7 +28,8 @@ RUN node -e "const pkg = require('./package.json'); \
 
 # Install moment (special case for backwards compatibility)
 RUN rm -f node_modules/.modules.yaml && \
-    pnpm add moment@2.30.1 --prod --no-lockfile
+    pnpm add moment@2.30.1 --prod --no-lockfile && \
+    pnpm add cheerio --prod --no-lockfile
 
 # ==============================================================================
 # STAGE 2: Python runner build (@n8n/task-runner-python) with uv
@@ -70,8 +71,8 @@ RUN uv sync \
 COPY packages/@n8n/task-runner-python/ ./
 RUN uv sync \
       --frozen \
-			--no-dev \
-			--all-extras \
+	  --no-dev \
+      --all-extras \
       --no-editable
 
 # ==============================================================================

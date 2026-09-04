@@ -25,4 +25,4 @@ kubeconfig*
 
 *.csv
 
-/TMP/
+/TMP/*
